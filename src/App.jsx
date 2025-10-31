@@ -1,28 +1,27 @@
-// src/App.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import Units from "./App" // or rename if needed
-import Groups from "./Groups"
-import Calls from "./Calls"
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Units from './pages/Units';
+import Calls from './pages/Calls';
+import Groups from './pages/Groups';
 
-export default function MainApp() {
+export default function App() {
   return (
-    <BrowserRouter>
-      <nav className="p-4 bg-gray-900 text-white flex gap-4">
-        <Link to="/">Units</Link>
-        <Link to="/groups">Groups</Link>
-        <Link to="/calls">Calls</Link>
+    <Router>
+      <nav style={{ display: 'flex', gap: '1rem', padding: '1rem', background: '#111' }}>
+        <Link style={{ color: '#0ef' }} to="/">Units</Link>
+        <Link style={{ color: '#0ef' }} to="/calls">Calls</Link>
+        <Link style={{ color: '#0ef' }} to="/groups">Groups</Link>
       </nav>
+
       <Routes>
         <Route path="/" element={<Units />} />
-        <Route path="/groups" element={<Groups />} />
         <Route path="/calls" element={<Calls />} />
+        <Route path="/groups" element={<Groups />} />
       </Routes>
-    </BrowserRouter>
-  )
+    </Router>
+  );
 }
+
 
 import { supabase } from "./supabaseClient"
 
