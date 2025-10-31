@@ -1,8 +1,7 @@
 {
-  "homepage": "https://Driftfusion.github.io/erlc-cad",
+  "homepage": ".",
   "name": "erlc-cad",
   "version": "1.0.0",
-  "homepage": "https://Driftfusion.github.io/erlc-cad",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
