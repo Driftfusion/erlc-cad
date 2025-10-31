@@ -3,6 +3,90 @@ import React, { useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import Units from "./App" // or rename if needed
+import Groups from "./Groups"
+import Calls from "./Calls"
+
+export default function MainApp() {
+  return (
+    <BrowserRouter>
+      <nav className="p-4 bg-gray-900 text-white flex gap-4">
+        <Link to="/">Units</Link>
+        <Link to="/groups">Groups</Link>
+        <Link to="/calls">Calls</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Units />} />
+        <Route path="/groups" element={<Groups />} />
+        <Route path="/calls" element={<Calls />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+import { supabase } from "./supabaseClient"
+
+export default function App() {
+  const [units, setUnits] = useState([])
+  const [name, setName] = useState("")
+
+  // Fetch units initially
+  useEffect(() => {
+    fetchUnits()
+    subscribeToUnits()
+  }, [])
+
+  async function fetchUnits() {
+    const { data, error } = await supabase.from("units").select("*").order("id", { ascending: true })
+    if (error) console.error(error)
+    else setUnits(data)
+  }
+
+  // Listen for real-time updates
+  function subscribeToUnits() {
+    supabase
+      .channel("units-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "units" },
+        (payload) => {
+          console.log("Change received!", payload)
+          fetchUnits() // Refresh list automatically
+        }
+      )
+      .subscribe()
+  }
+
+  async function addUnit() {
+    if (!name) return
+    await supabase.from("units").insert([{ name, status: "Available", department: "Default" }])
+    setName("")
+  }
+
+  return (
+    <div className="p-4 text-white bg-black min-h-screen">
+      <h1 className="text-2xl mb-4">🚔 Live Units</h1>
+
+      <div className="mb-4">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="text-black p-2"
+          placeholder="Enter unit name"
+        />
+        <button onClick={addUnit} className="ml-2 p-2 bg-green-600 rounded">Add Unit</button>
+      </div>
+
+      <ul>
+        {units.map((u) => (
+          <li key={u.id}>
+            {u.name} — {u.status} ({u.department})
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 
 
